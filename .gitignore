@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+logs/
+data/baseline.json
+data/state.json
+logs/*.jsonl
+*.log
+.vscode/

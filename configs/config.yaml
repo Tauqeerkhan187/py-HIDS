@@ -1,0 +1,33 @@
+agent:
+  name: "TK-HIDS"
+  poll_interval_sec: 2
+
+integrity:
+  enabled: true
+  paths:
+    - "./watched"
+  hash_algo: "sha256"
+  baseline_file: "./data/baseline.json"
+
+processWatch:
+  enabled: true
+  suspicious_names:
+    - "mimikatz"
+    - "psexec"
+    - "nc"
+    - "netcat"
+    - "powershell"
+    - "cmd"
+
+netWatch:
+  enabled: true
+  watch_outbound: true
+  suspicious_ports:
+    - 4444
+    - 1337
+    - 6667
+    - 9001
+
+logging:
+  alerts_file: "./logs/alerts.jsonl"
+
