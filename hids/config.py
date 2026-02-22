@@ -49,8 +49,8 @@ class AgentConfig:
 class AppConfig:
     agent: AgentConfig
     integrity: IntegrityConfig
-    process_watch: ProcessWatchConfig
-    net_watch: NetWatchConfig
+    processWatch: ProcessWatchConfig
+    netWatch: NetWatchConfig
     logging: LoggingConfig
 
 def load_config(path: str) -> AppConfig:
@@ -60,7 +60,7 @@ def load_config(path: str) -> AppConfig:
     return AppConfig(
         agent=AgentConfig(**cfg["agent"]),
         integrity=IntegrityConfig(**cfg["integrity"]),
-        process_watch=ProcessWatchConfig(**cfg["process_watch"]),
-        net_watch=NetWatchConfig(**cfg["net_watch"]),
+        processWatch=ProcessWatchConfig(**cfg["processWatch"]),
+        netWatch=NetWatchConfig(**cfg["netWatch"]),
         logging=LoggingConfig(**cfg["logging"]),
     )

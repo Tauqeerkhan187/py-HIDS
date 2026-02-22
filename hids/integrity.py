@@ -45,15 +45,27 @@ def build_baseline(paths: List[str], algo: str) -> Dict[str, str]:
     return baseline
 
 def load_baseline(baseline_file: str) -> Dict[str, str]:
+    """
+    Loads the baseline JSON map from disk now.
+
+    if the file doesn't exist, is empty, or is corrupted, return an empty baseline.
+    This prevents the agent from crashing and allows it to rebuild baseline cleanly.
+    """
     if not os.path.exists(baseline_file):
         return {}
-    with open(baseline_file, "r", encoding="utf-8") as file:
-        return json.load(file)
 
-def save_baseline(baseline_file: str. baseline: Dict[str, str]) -> None:
+    try:
+        # Handle empty files
+        if os.path.getsize(baseline_file) == 0:
+            return {}
+
+        with open(baseline__file, "r", encoding="utf-8") as file:
+            data = json.load(file)
+
+def save_baseline(baseline_file: str, baseline: Dict[str, str]) -> None:
     os.makedirs(os.path.dirname(baseline_file), exist_ok=True)
     with open(baseline_file, "w", encoding="utf-8") as file:
-        json.dump(baseline, f, indent=2)
+        json.dump(baseline, file, indent=2)
 
 
 def diff_baseline(old: Dict[str, str], new: Dict[str, str]) -> Tuple[List[str],  List[str],                                                                 List[str]]:
