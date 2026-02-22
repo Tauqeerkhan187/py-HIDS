@@ -24,7 +24,7 @@ class AlertLogger:
 
     def log(self, alert: Dict[str, Any]) -> None:
         record = {
-            "ts": datetime.now(timezone.utc).isoformat()
+            "ts": datetime.now(timezone.utc).isoformat(),
             "agent": self.agent_name,
             **alert,
         }
