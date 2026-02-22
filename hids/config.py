@@ -1,6 +1,16 @@
 # Author: TK
 # Date: 22/02/2026
-# Purpose:
+# Purpose: Load YAML config and map it to structured data classes
+"""
+Loads YAML configuration and maps it into structured dataclasses.
+This allows:
+- Type-safe access to settings
+- Clean separation between config and runtime logic
+- Easy extension of detection modules
+
+All runtime behavior is driven by config.yaml.
+
+"""
 
 from dataclasses import dataclass
 from typing import List, Dict, Any
