@@ -62,6 +62,11 @@ def load_baseline(baseline_file: str) -> Dict[str, str]:
         with open(baseline__file, "r", encoding="utf-8") as file:
             data = json.load(file)
 
+        return data if isinstance(data, dict) else {}
+
+    except (json.JSONDecodeError, OSError):
+        return {}
+
 def save_baseline(baseline_file: str, baseline: Dict[str, str]) -> None:
     os.makedirs(os.path.dirname(baseline_file), exist_ok=True)
     with open(baseline_file, "w", encoding="utf-8") as file:
