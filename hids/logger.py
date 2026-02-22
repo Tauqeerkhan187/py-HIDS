@@ -29,4 +29,4 @@ class AlertLogger:
             **alert,
         }
         with open(self.alerts_file, "a", encoding="utf-8") as file:
-            file.write(json.dumps(record, ensure_ascii=False) + "\n"
+            file.write(json.dumps(record, ensure_ascii=False) + "\n")
