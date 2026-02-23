@@ -27,12 +27,14 @@ class IntegrityConfig:
 class ProcessWatchConfig:
     enabled: bool
     suspicious_names: List[str]
+    allow_names: List[str] = None
 
 @dataclass
 class NetWatchConfig:
     enabled: bool
     watch_outbound: bool
     suspicious_ports: List[int]
+    allow_remote_ports: List[int] = None
 
 @dataclass
 class LoggingConfig:
@@ -57,10 +59,22 @@ def load_config(path: str) -> AppConfig:
     with open(path, "r", encoding="utf-8") as file:
         cfg: Dict[str, Any] = yaml.safe_load(file)
 
+    pw = cfg["processWatch"]
+    nw = cfg["netWatch"]
+
     return AppConfig(
         agent=AgentConfig(**cfg["agent"]),
         integrity=IntegrityConfig(**cfg["integrity"]),
-        processWatch=ProcessWatchConfig(**cfg["processWatch"]),
-        netWatch=NetWatchConfig(**cfg["netWatch"]),
+        processWatch=ProcessWatchConfig(
+            enabled=pw["enabled"],
+            suspicious_names=pw["suspicious_names"],
+            allow_names=pw.get("allow_names", []),
+        ),
+        netWatch=NetWatchConfig(
+            enabled=nw["enabled"],
+            watch_outbound=nw["watch_outbound"],
+            suspicious_ports=nw["suspicious_ports"],
+            allow_remote_ports=nw.get("allow_remote_ports", []),
+        )
         logging=LoggingConfig(**cfg["logging"]),
     )
