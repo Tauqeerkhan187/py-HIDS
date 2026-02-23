@@ -36,11 +36,18 @@ def run(cfg: AppConfig) -> None:
     baseline = load_baseline(cfg.integrity.baseline_file)
 
     if cfg.processWatch.enabled:
-        proc_watcher = ProcessWatcher(cfg.processWatch.suspicious_names)
+        proc_watcher = ProcessWatcher(
+            cfg.processWatch.suspicious_names,
+            cfg.processWatch.allow_names)
+
         proc_watcher.detect_new() # prime
 
     if cfg.netWatch.enabled:
-        net_watcher = NetWatcher(cfg.netWatch.suspicious_ports, cfg.netWatch.watch_outbound)
+        net_watcher = NetWatcher(
+            cfg.netWatch.suspicious_ports,
+            cfg.netWatch.allow_remote_ports,
+            cfg.netWatch.watch_outbound,
+        )
         net_watcher.detect_new() # prime
 
     print(f"[+] {cfg.agent.name} running. Logging to {cfg.logging.alerts_file}")
