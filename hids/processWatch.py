@@ -16,8 +16,9 @@ import psutil
 from typing import Dict, Set, List
 
 class ProcessWatcher:
-    def __init__(self, suspicious_names: List[str]):
+    def __init__(self, suspicious_names: List[str], allow_names: List[str]):
         self.suspicious = {s.lower() for s in suspicious_names}
+        self.allow = {a.lower() for s in suspicious_names}
         self.seen_pids: Set[int] = set()
 
     def snapshot(self) -> Dict[int, Dict]:
@@ -38,6 +39,9 @@ class ProcessWatcher:
         for pid in new_pids:
             info = current.get(pid, {})
             name = (info.get("name") or "").lower()
+            # Drop noise early
+            if name in self.allow:
+                continue
 
             severity = "low"
             reason = "new_process"
