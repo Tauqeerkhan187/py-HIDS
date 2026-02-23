@@ -37,6 +37,10 @@ class NetWatchConfig:
     allow_remote_ports: List[int] = None
 
 @dataclass
+class MitreConfig:
+    mappings: Dict[str, Dict[str, List[str]]]
+
+@dataclass
 class LoggingConfig:
     alerts_file: str
 
@@ -54,6 +58,7 @@ class AppConfig:
     processWatch: ProcessWatchConfig
     netWatch: NetWatchConfig
     logging: LoggingConfig
+    mitre: MitreConfig
 
 def load_config(path: str) -> AppConfig:
     with open(path, "r", encoding="utf-8") as file:
@@ -61,6 +66,7 @@ def load_config(path: str) -> AppConfig:
 
     pw = cfg["processWatch"]
     nw = cfg["netWatch"]
+    mitre_cfg = cfg.get("mitre", {"mappings": {}})
 
     return AppConfig(
         agent=AgentConfig(**cfg["agent"]),
@@ -77,4 +83,5 @@ def load_config(path: str) -> AppConfig:
             allow_remote_ports=nw.get("allow_remote_ports", []),
         ),
         logging=LoggingConfig(**cfg["logging"]),
+        mitre=MitreConfig(mappings=mitre_cfg.get("mappings", {})),
     )
