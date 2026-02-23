@@ -16,8 +16,9 @@ import psutil
 from typing import Dict, List, Set, Tuple
 
 class NetWatcher:
-    def __init__(self, suspicious_ports: List[int], watch_outbound: bool = True):
+    def __init__(self, suspicious_ports: List[int], allow_remote_ ports: List[int], watch_outbound: bool = True):
         self.suspicious_ports = set(suspicious_ports)
+        self.allow_ports = set(allow_remote_ports or [])
         self.watch_outbound = watch_outbound
         self.seen: Set[Tuple] = set()
 
@@ -45,6 +46,9 @@ class NetWatcher:
             if rport in self.suspicious_ports:
                 severity = "high"
                 reason = "suspicious_remote_port"
+
+            if rport in self.allow_ports:
+                continue
 
             alerts.append({
                 "type": "network",
