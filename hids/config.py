@@ -75,6 +75,6 @@ def load_config(path: str) -> AppConfig:
             watch_outbound=nw["watch_outbound"],
             suspicious_ports=nw["suspicious_ports"],
             allow_remote_ports=nw.get("allow_remote_ports", []),
-        )
+        ),
         logging=LoggingConfig(**cfg["logging"]),
     )
