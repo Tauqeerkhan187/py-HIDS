@@ -31,3 +31,36 @@ netWatch:
 logging:
   alerts_file: "./logs/alerts.jsonl"
 
+
+processWatch:
+  enabled: true
+  suspicious_names:
+    - "mimikatz"
+    - "psexec"
+    - "nc"
+    - "netcat"
+    - "powershell"
+    - "cmd"
+  allow_names:
+    - "firefox"
+    - "Web Content"
+    - "Utility Process"
+    - "RDD Process"
+    - "Socket Process"
+    - "crashhelper"
+    - "glxtest"
+    - "snap"
+
+netWatch:
+  enabled: true
+  watch_outbound: true
+  suspicious_ports:
+    - 4444
+    - 1337
+    - 6667
+    - 9001
+  allow_remote_ports:
+    - 80
+    - 443
+    - 53
+
