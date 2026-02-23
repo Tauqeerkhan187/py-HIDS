@@ -59,7 +59,7 @@ def load_baseline(baseline_file: str) -> Dict[str, str]:
         if os.path.getsize(baseline_file) == 0:
             return {}
 
-        with open(baseline__file, "r", encoding="utf-8") as file:
+        with open(baseline_file, "r", encoding="utf-8") as file:
             data = json.load(file)
 
         return data if isinstance(data, dict) else {}
