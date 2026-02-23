@@ -18,7 +18,7 @@ from typing import Dict, Set, List
 class ProcessWatcher:
     def __init__(self, suspicious_names: List[str], allow_names: List[str]):
         self.suspicious = {s.lower() for s in suspicious_names}
-        self.allow = {a.lower() for s in suspicious_names}
+        self.allow = {a.lower() for a in (allow_names or [])}
         self.seen_pids: Set[int] = set()
 
     def snapshot(self) -> Dict[int, Dict]:
