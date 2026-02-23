@@ -64,3 +64,12 @@ netWatch:
     - 443
     - 53
 
+mitre:
+  mappings:
+    integrity:
+      file_added: ["T1070"]  # Indicator Removal on Host (approx)
+      file_modified: ["T1565.001"]  # Data manipulation: Stored Data Manipulation
+    process:
+      suspicious_process_name: ["T1059"] # Command and Scripting Intrepreter
+      new_connection: []
+
