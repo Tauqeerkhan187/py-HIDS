@@ -59,34 +59,24 @@ def run(cfg: AppConfig) -> None:
         # Integ scan
         if cfg.integrity.enabled:
             new_map = build_baseline(cfg.integrity.paths, cfg.integrity.hash_algo)
-
             if baseline:
                 added, removed, modified = diff_baseline(baseline, new_map)
 
                 for fp in added:
-            logger.log(tag_alert(
-                {"type": "integrity", "severity": "medium", "reason": "file_added",
-                 "path": fp},
-                cfg.mitre.mappings
-            ))
+                    logger.log(tag_alert(
+                        {"type": "integrity", "severity": "medium", "reason": "file_added","path": fp}, cfg.mitre.mappings))
 
-        for fp in removed:
-            logger.log(tag_alert(
-                {"type": "integrity", "severity": "medium", "reason": "file_removed",
-                 "path": fp},
-                cfg.mitre.mappings
-            ))
+                for fp in removed:
+                    logger.log(tag_alert(
+                        {"type": "integrity", "severity": "medium", "reason": "file_removed", "path": fp}, cfg.mitre.mappings))
 
-        for fp in modified:
-            logger.log(tag_alert(
-                {"type": "integrity", "severity": "high", "reason": "file_modified",
-                 "path": fp},
-                cfg.mitre.mappings
-            ))
+                for fp in modified:
+                    logger.log(tag_alert(
+                        {"type": "integrity", "severity": "high", "reason": "file_modified", "path": fp}, cfg.mitre.mappings))
 
 
-            baseline = new_map
-            save_baseline(cfg.integrity.baseline_file, baseline)
+        baseline = new_map
+        save_baseline(cfg.integrity.baseline_file, baseline)
 
         # Process scan
         if proc_watcher:
@@ -98,5 +88,5 @@ def run(cfg: AppConfig) -> None:
             for a in net_watcher.detect_new():
                 logger.log(tag_alert(a, cfg.mitre.mappings))
 
-        time.sleep(cfg.agent.poll_interval_sec)
+    time.sleep(cfg.agent.poll_interval_sec)
 
