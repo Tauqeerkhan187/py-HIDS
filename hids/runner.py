@@ -28,7 +28,8 @@ from hids.netWatch import NetWatcher
 from hids.mitre import tag_alert
 
 def run(cfg: AppConfig) -> None:
-    logger = AlertLogger(cfg.logging.alerts_file, cfg.agent.name)
+    logger = AlertLogger(cfg.logging.alerts_file, cfg.agent.name, dedupe_sec=cfg.logging.dedupe_sec)
+
 
     proc_watcher: Optional[ProcessWatcher] = None
     net_watcher: Optional[NetWatcher] = None
