@@ -13,13 +13,19 @@ Usage:
 import argparse
 from hids.config import load_config
 from hids.runner import run
+from hids.report import generate_report
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="config/config.yaml", help="Path to config YAML")
+    ap.add_argument("--report", action="store_true", help="Print a summary report and exit")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
+    if args.report:
+        print(generate_report(cfg.logging.alerts_file))
+        return
+
     run(cfg)
 
 
