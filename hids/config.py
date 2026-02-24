@@ -43,6 +43,7 @@ class MitreConfig:
 @dataclass
 class LoggingConfig:
     alerts_file: str
+    dedupe_sec: int = 0
 
 
 @dataclass
