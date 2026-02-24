@@ -70,7 +70,12 @@ mitre:
     integrity:
       file_added: ["T1070"]  # Indicator Removal on Host (approx)
       file_modified: ["T1565.001"]  # Data manipulation: Stored Data Manipulation
+      file_removed: ["T1070"] # Indicator Removal on Host (broad/approx)
     process:
       suspicious_process_name: ["T1059"] # Command and Scripting Intrepreter
-      new_connection: []
+      new_connection: [] # noisy/normal by deflt
+
+    network:
+      suspicious_remote_port: ["T1071"] # Application layer protocol (broad)
+      new_connection: []  # noisy/normal by deflt
 
