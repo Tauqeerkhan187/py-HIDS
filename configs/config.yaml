@@ -43,6 +43,7 @@ processWatch:
     - "powershell"
     - "cmd"
   allow_names:
+    - "bash"
     - "firefox"
     - "Web Content"
     - "Utility Process"
