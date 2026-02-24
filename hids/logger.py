@@ -13,20 +13,73 @@ This module isolates logging responsibilities from detection logic.
 
 import json
 import os
+import time
+from collections import deque
 from datetime import datetime, timezone
 from typing import Any, Dict
 
 class AlertLogger:
-    def __init__(self, alerts_file: str, agent_name: str):
+    """
+    Writes alerts in JSONL format
+
+    Includes an optional dediplication window to avoid repeated alerts
+    caused by polling.
+
+    """
+    def __init__(self, alerts_file: str, agent_name: str, dedupe_sec: int = 0):
         self.alerts_file = alerts_file
         self.agent_name = agent_name
+        self.dedupe_sec = int(dedupe_sec or 0)
+
+        # key last_ts, plus queue for expiring old keys efficiently
+        self._recent: Dict[str, float] = {}
+        self._recent_q: deque[tuple[float, str]] = deque()
+
         os.makedirs(os.path.dirname(alerts_file), exist_ok=True)
 
+    def _dedupe_key(self, alert: Dict[str, Any]) -> str:
+        """
+        Create a stable identity key for an alert so we can drop dups.
+        """
+        t = alert.get("type")
+        r = alert.get("reason")
+
+        if t == "integrity":
+            return f"{t}:{r}:{alert.get('path')}"
+        if t == "process":
+            return f"{t}:{r}:{alert.get('name')}:{alert.get('pid')}"
+        if t == "network":
+            return f"{t}:{r}:{alert.get('remote')}:{alert.get('pid')}"
+
+        return json.dumps(alert, sort_keys=True)
+
+    def _expire_old(self, now: float) -> None:
+        if self.dedupe_sec <= 0:
+            return
+
+        while self._recent_q and (now - self._recent_q[0][0]) > self.dedupe_sec:
+            ts, key = self._recent_q.popleft()
+            # only remove if ts matches (protects against re-adding same key)
+            if self._recent.get(key) == ts:
+                self._recent.pop(key, None)
+
     def log(self, alert: Dict[str, Any]) -> None:
+        now = time.time()
+
+        if self.dedupe_sec > 0:
+            self._expire_old(now)
+            key = self._dedupe_key(alert)
+            if key in self._recent:
+                return
+            self._recent[key] = now
+            self._recent_q.append((now, key))
+
         record = {
             "ts": datetime.now(timezone.utc).isoformat(),
             "agent": self.agent_name,
             **alert,
+
         }
         with open(self.alerts_file, "a", encoding="utf-8") as file:
-            file.write(json.dumps(record, ensure_ascii=False) + "\n")
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+
