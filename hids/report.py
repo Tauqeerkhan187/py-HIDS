@@ -7,6 +7,13 @@ from collections import Counter
 from datetime import datetime
 from typing import Any, Dict, List
 
+MITRE_NAMES = {
+    "T1565.001": "Stored Data Manipulation",
+    "T1070": "Indicator Removal on Host",
+    "T1059": "Command and Scripting Interpreter",
+    "T1071": "Application Layer Protocol",
+}
+
 def _read_alerts(alerts_file: str) -> List[Dict[str, Any]]:
     alerts: List[Dict[str, Any]] = []
     try:
@@ -60,11 +67,18 @@ def generate_report(alerts_file: str) -> str:
     if mitre:
         lines.append("\nMITRE ATT&CK techniques observed")
         for k, v in mitre.most_common(10):
-            lines.append(f" -  {k}: {v}")
+            name = MITRE_NAMES.get(k, "")
+            if name:
+                lines.append(f"  - {k} ({name}): {v}")
+            else:
+                lines.append(f"  - {k}: {v}")
 
     # show last 5 alerts for quick view
     lines.append("\nLast 5 alerts:")
     for a in alerts[-5:]:
+        mitre_list = a.get("mitre_attack", []) or []
+        mitre_str = ",".join(mitre_list) if mitre_list else "-"
+
         lines.append(
             f"  - {a.get('ts')} "
             f"type={a.get('type')} "
