@@ -66,6 +66,37 @@ netWatch:
     - 443
     - 53
 
+risk:
+  enabled: true
+  base_scores:
+    integrity:
+      file_added: 40
+      file_modified: 70
+      file_removed: 60
+    process:
+      new_process: 5
+      suspicious_process_name: 80
+    network:
+      new_connection: 5
+      suspicious_remote_port: 75
+    anomaly:
+      process_burst: 50
+      connection_burst: 55
+  mitre_weights:
+    T1565.001: 15
+    T1070: 10
+    T1059: 15
+    T1071: 10
+  severity_thresholds:
+    medium: 40
+    high: 70
+
+anomaly:
+  enabled: true
+  window_sec: 60
+  process_burst_threshold: 10
+  network_burst_threshold: 20
+
 mitre:
   mappings:
     integrity:
