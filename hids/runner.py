@@ -25,6 +25,7 @@ from hids.integrity import(
 )
 from hids.processWatch import ProcessWatcher
 from hids.netWatch import NetWatcher
+from hids.mitre import tag_alert
 
 def run(cfg: AppConfig) -> None:
     logger = AlertLogger(cfg.logging.alerts_file, cfg.agent.name)
@@ -62,14 +63,26 @@ def run(cfg: AppConfig) -> None:
                 added, removed, modified = diff_baseline(baseline, new_map)
 
                 for fp in added:
-                    logger.log({"type": "integrity", "severity": "medium", "reason": "file_added",
-                                "path": fp})
-                for fp in removed:
-                    logger.log({"type": "integrity", "severity": "medium", "reason": "file_removed",
-                                "path": fp})
-                for fp in modified:
-                    logger.log({"type": "integrity", "severity": "high", "reason": "file_modified",
-                                "path": fp})
+            logger.log(tag_alert(
+                {"type": "integrity", "severity": "medium", "reason": "file_added",
+                 "path": fp},
+                cfg.mitre.mappings
+            ))
+
+        for fp in removed:
+            logger.log(tag_alert(
+                {"type": "integrity", "severity": "medium", "reason": "file_removed",
+                 "path": fp},
+                cfg.mitre.mappings
+            ))
+
+        for fp in modified:
+            logger.log(tag_alert(
+                {"type": "integrity", "severity": "high", "reason": "file_modified",
+                 "path": fp},
+                cfg.mitre.mappings
+            ))
+
 
             baseline = new_map
             save_baseline(cfg.integrity.baseline_file, baseline)
@@ -77,12 +90,12 @@ def run(cfg: AppConfig) -> None:
         # Process scan
         if proc_watcher:
             for a in proc_watcher.detect_new():
-                logger.log(a)
+                logger.log(tag_alert(a, cfg.mitre.mappings))
 
         # net scan
         if net_watcher:
             for a in net_watcher.detect_new():
-                logger.log(a)
+                logger.log(tag_alert(a, cfg.mitre.mappings))
 
         time.sleep(cfg.agent.poll_interval_sec)
 
