@@ -70,7 +70,7 @@ def generate_report(alerts_file: str) -> str:
             f"type={a.get('type')} "
             f"reason={a.get('reason')} "
             f"sev={a.get('severity')} "
-            f"mitre={a.get('mitre_attack', [])}"
+            f"mitre={mitre_str}"
         )
 
     return "\n".join(lines)
