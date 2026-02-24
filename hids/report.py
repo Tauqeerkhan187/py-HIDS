@@ -66,10 +66,11 @@ def generate_report(alerts_file: str) -> str:
     lines.append("\nLast 5 alerts:")
     for a in alerts[-5:]:
         lines.append(
-            f" - {a.get('ts')}"
-            f"{a.get('type')}"
-            f"{a.get('reason')}"
-            f"sev={a.get('severity')}"
-            f"mitre={a.get('mitre_attack', [])}")
+            f"  - {a.get('ts')} "
+            f"type={a.get('type')} "
+            f"reason={a.get('reason')} "
+            f"sev={a.get('severity')} "
+            f"mitre={a.get('mitre_attack', [])}"
+        )
 
     return "\n".join(lines)
