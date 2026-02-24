@@ -41,6 +41,20 @@ class MitreConfig:
     mappings: Dict[str, Dict[str, List[str]]]
 
 @dataclass
+class RiskConfig:
+    enabled: bool
+    base_scores: Dict[str, Dict[str, int]]
+    mitre_weights: Dict[str, int]
+    severity_thresholds: Dict[str, int]
+
+@dataclass
+class AnomalyConfig:
+    enabled: bool
+    window_sec: int
+    process_burst_threshold: int
+    network_burst_threshold: int
+
+@dataclass
 class LoggingConfig:
     alerts_file: str
     dedupe_sec: int = 0
@@ -60,6 +74,8 @@ class AppConfig:
     netWatch: NetWatchConfig
     logging: LoggingConfig
     mitre: MitreConfig
+    risk: RiskConfig
+    anomaly: AnomalyConfig
 
 def load_config(path: str) -> AppConfig:
     with open(path, "r", encoding="utf-8") as file:
@@ -68,6 +84,8 @@ def load_config(path: str) -> AppConfig:
     pw = cfg["processWatch"]
     nw = cfg["netWatch"]
     mitre_cfg = cfg.get("mitre", {"mappings": {}})
+    risk_cfg = cfg.get("risk", {})
+    an_cfg = cfg.get("anomaly", {})
 
     return AppConfig(
         agent=AgentConfig(**cfg["agent"]),
@@ -84,5 +102,20 @@ def load_config(path: str) -> AppConfig:
             allow_remote_ports=nw.get("allow_remote_ports", []),
         ),
         logging=LoggingConfig(**cfg["logging"]),
+
         mitre=MitreConfig(mappings=mitre_cfg.get("mappings", {})),
+
+        risk=RiskConfig(
+            enabled=risk_cfg.get("enabled", True),
+            base_scores=risk_cfg.get("base_scores", {})
+            mitre_weights=risk_cfg.get("mitre_weights", {}),
+            severity_thresholds=risk_cfg.get("severity_thresholds", {"medium": 40, "high": 70}),
+        ),
+
+        anomaly=AnomalyConfig(
+            enabled=an_cfg.get("enabled", True),
+            window_sec=an_cfg.get("window_sec", 60),
+            process_burst_threshold=an_cfg.get("process_burst_threshold", 10),
+            network_burst_threshold=an_cfg.get("network_burst_threshold", 20),
+        )
     )
