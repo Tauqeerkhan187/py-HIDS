@@ -14,7 +14,6 @@ Responsibilities:
 This module coordinates all security checks.
 
 """
-
 import time
 from typing import Optional
 
@@ -26,10 +25,28 @@ from hids.integrity import(
 from hids.processWatch import ProcessWatcher
 from hids.netWatch import NetWatcher
 from hids.mitre import tag_alert
+from hids.scoring import score_alert
+from hids.anomaly import AnomalyEngine
 
 def run(cfg: AppConfig) -> None:
     logger = AlertLogger(cfg.logging.alerts_file, cfg.agent.name, dedupe_sec=cfg.logging.dedupe_sec)
 
+    anomaly = AnomalyEngine(
+        enabled=cfg.anomaly.enabled,
+        window_sec=cfg.anomaly.window_sec,
+        process_burst_threshold=cfg.anomaly.process_burst_threshold,
+        network_burst_threshold=cfg.anomaly.network_burst_threshold,
+    )
+
+    def emit(alert: dict) -> None:
+        enriched = tag_alert(alert, cfg.mitre.mappings)
+        scored = score_alert(enriched, cfg.risk.__dict__)
+        logger.log(scored)
+
+        for extra in anomaly.ingest(scored):
+            extra_enriched = tag_alert(extra, cfg.mitre.mappings)
+            extra_scored = score_alert(extra_enriched, cfg.risk.__dict__)
+            logger.log(extra_scored)
 
     proc_watcher: Optional[ProcessWatcher] = None
     net_watcher: Optional[NetWatcher] = None
@@ -63,16 +80,16 @@ def run(cfg: AppConfig) -> None:
                 added, removed, modified = diff_baseline(baseline, new_map)
 
                 for fp in added:
-                    logger.log(tag_alert(
-                        {"type": "integrity", "severity": "medium", "reason": "file_added","path": fp}, cfg.mitre.mappings))
+                    emit(
+                        {"type": "integrity", "severity": "medium", "reason": "file_added","path": fp})
 
                 for fp in removed:
-                    logger.log(tag_alert(
-                        {"type": "integrity", "severity": "medium", "reason": "file_removed", "path": fp}, cfg.mitre.mappings))
+                    emit(
+                        {"type": "integrity", "severity": "medium", "reason": "file_removed", "path": fp})
 
                 for fp in modified:
-                    logger.log(tag_alert(
-                        {"type": "integrity", "severity": "high", "reason": "file_modified", "path": fp}, cfg.mitre.mappings))
+                    emit(
+                        {"type": "integrity", "severity": "high", "reason": "file_modified", "path": fp})
 
 
         baseline = new_map
@@ -81,12 +98,12 @@ def run(cfg: AppConfig) -> None:
         # Process scan
         if proc_watcher:
             for a in proc_watcher.detect_new():
-                logger.log(tag_alert(a, cfg.mitre.mappings))
+                emit(a)
 
         # net scan
         if net_watcher:
             for a in net_watcher.detect_new():
-                logger.log(tag_alert(a, cfg.mitre.mappings))
+                emit(a)
 
-    time.sleep(cfg.agent.poll_interval_sec)
+        time.sleep(cfg.agent.poll_interval_sec)
 
