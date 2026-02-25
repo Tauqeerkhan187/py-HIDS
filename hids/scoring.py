@@ -28,7 +28,7 @@ def score_alert(alert: Dict[str, Any], risk_cfg: Dict[str, Any]) -> Dict[str, An
     mitre_weights = risk_cfg.get("mitre_weights") or {}
     techniques: List[str] = alert.get("mitre_attack", []) or []
     for t in techniques:
-        scores += int(mitre_weights.get(t, 0))
+        score += int(mitre_weights.get(t, 0))
 
     # Escalate severity based on score
     thresholds = risk_cfg.get("severity_thresholds") or {}

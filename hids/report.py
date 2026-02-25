@@ -4,7 +4,7 @@
 
 import json
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 MITRE_NAMES = {
@@ -46,7 +46,7 @@ def generate_report(alerts_file: str) -> str:
 
     lines: List[str] = []
 
-    lines.append(f"TK-HIDS Summary Report ({datetime.utcnow().isoformat()}Z)")
+    lines.append(f"TK-HIDS Summary Report ({datetime.now(timezone.utc).isoformat()})")
 
     lines.append("=" * 60)
 

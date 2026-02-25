@@ -19,12 +19,14 @@ class AnomalyEngine:
         window_sec: int = 60,
         process_burst_threshold: int = 10,
         network_burst_threshold: int = 20,
+        cooldown_sec: int = 30,
         time_fn =time.time,
     ):
         self.enabled = enabled
         self.window_sec = int(window_sec)
         self.proc_thr = int(process_burst_threshold)
         self.net_thr = int(network_burst_threshold)
+        self.cooldown_sec = int(cooldown_sec)
         self.time_fn = time_fn
 
         self.proc_hits: Dict[str, Deque[float]] = defaultdict(deque)
@@ -37,10 +39,9 @@ class AnomalyEngine:
         while dq and (now - dq[0]) > self.window_sec:
             dq.popleft()
 
-    def _cooldown_ok(self, key: str, now: float, cooldown: int = 30) -> bool:
-        last = self._last_fired.get(key, 0.0)
-        if (now - last) >= cooldown:
-            self._last_fired[key] = now
+    def _cooldown_ok(self, key: str, now: float) -> bool:
+        last = self._last_fired.get(key, None)
+        if last is None or (now - last) >= self.cooldown_sec:
             return True
         return False
 
@@ -62,7 +63,7 @@ class AnomalyEngine:
                 self._prune(dq, now)
                 if len(dq) >= self.proc_thr:
                     key = f"proc:{name}"
-                    if self.cooldown_ok(key, now):
+                    if self._cooldown_ok(key, now):
                         out.append({
                             "type": "anomaly",
                             "severity": "medium",
