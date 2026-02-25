@@ -1,9 +1,24 @@
+# Virtual environment
 .venv/
+
+# Python cache
 __pycache__/
 *.pyc
+*.pyo
+
+# Logs & runtime output
 logs/
-data/baseline.json
-data/state.json
-logs/*.jsonl
 *.log
+*.jsonl
+
+# Runtime state
+data/
+
+# Local test directories
+watched/
+
+# IDE
 .vscode/
+
+# OS
+.DS_Store
