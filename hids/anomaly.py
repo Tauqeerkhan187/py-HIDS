@@ -66,9 +66,9 @@ class AnomalyEngine:
                         out.append({
                             "type": "anomaly",
                             "severity": "medium",
-                            "reason": "process_burst"
+                            "reason": "process_burst",
                             "name": name,
-                            "count": len(dq)
+                            "count": len(dq),
                             "window_sec": self.window_sec,
                         })
 
