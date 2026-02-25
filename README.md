@@ -254,7 +254,7 @@ All core components are unit-tested:
 
 ---
 
-# ⚙ Configuration-Driven Design
+#  Configuration-Driven Design
 
 All behavior is controlled via:
 
