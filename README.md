@@ -7,13 +7,13 @@ TK-HIDS is a lightweight, modular **Host Intrusion Detection System (HIDS)** wri
 
 It monitors endpoint activity in real time and simulates core behaviors of modern EDR tools:
 
-* 🧾 File Integrity Monitoring
-* 🧠 Process Execution Tracking
-* 🌐 Network Connection Monitoring
-* 🧭 MITRE ATT&CK Mapping
-* 📊 Risk-Based Alert Scoring
-* 🚨 Behavioral Anomaly Detection
-* 📄 SOC-Style Reporting
+*  File Integrity Monitoring
+*  Process Execution Tracking
+*  Network Connection Monitoring
+*  MITRE ATT&CK Mapping
+*  Risk-Based Alert Scoring
+*  Behavioral Anomaly Detection
+*  SOC-Style Reporting
 
 Built from scratch with clean architecture and test-driven design.
 
