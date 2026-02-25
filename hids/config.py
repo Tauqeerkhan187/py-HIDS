@@ -107,7 +107,7 @@ def load_config(path: str) -> AppConfig:
 
         risk=RiskConfig(
             enabled=risk_cfg.get("enabled", True),
-            base_scores=risk_cfg.get("base_scores", {})
+            base_scores=risk_cfg.get("base_scores", {}),
             mitre_weights=risk_cfg.get("mitre_weights", {}),
             severity_thresholds=risk_cfg.get("severity_thresholds", {"medium": 40, "high": 70}),
         ),
